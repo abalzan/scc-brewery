@@ -13,44 +13,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @WebMvcTest
-public class BeerControllerIT {
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    private MockMvc mockMvc;
-
-    @MockBean
-    private BeerRepository beerRepository;
-
-    @MockBean
-    private BeerInventoryRepository beerInventoryRepository;
-
-    @MockBean
-    private BeerService beerService;
-
-    @MockBean
-    private BreweryService breweryService;
-
-    @MockBean
-    private CustomerRepository customerRepository;
-
-    @BeforeEach
-    public void setup() {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(webApplicationContext)
-                .apply(springSecurity())
-                .build();
-    }
+public class BeerControllerIT extends BaseIT {
 
     @WithMockUser("spring")
     @Test
@@ -67,6 +41,13 @@ public class BeerControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/findBeers"))
                 .andExpect(model().attributeExists("beer"));
+    }
+
+    @Test
+    void findBeersWithAnonymous() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/beers/find").with(anonymous()))
+                .andExpect(status().isOk());
+
     }
 
 }
