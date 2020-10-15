@@ -26,6 +26,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest
 public class BeerControllerIT extends BaseIT {
 
+    @Test
+    void initCreationForm() throws Exception {
+        mockMvc.perform(get("/beers/new").with(SecurityMockMvcRequestPostProcessors.httpBasic("user", "passwd")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("beers/createBeer"))
+                .andExpect(model().attributeExists("beer"));
+    }
+
     @WithMockUser("spring")
     @Test
     void findBeers() throws Exception {
