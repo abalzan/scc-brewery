@@ -34,6 +34,23 @@ public class BeerControllerIT extends BaseIT {
                 .andExpect(model().attributeExists("beer"));
     }
 
+    @Test
+    void initCreationFormWithScott() throws Exception {
+        mockMvc.perform(get("/beers/new").with(SecurityMockMvcRequestPostProcessors.httpBasic("scott", "tiger")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("beers/createBeer"))
+                .andExpect(model().attributeExists("beer"));
+    }
+
+    @Test
+    void initCreationFormWithSpring() throws Exception {
+        mockMvc.perform(get("/beers/new").with(SecurityMockMvcRequestPostProcessors.httpBasic("spring", "test")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("beers/createBeer"))
+                .andExpect(model().attributeExists("beer"));
+    }
+
+
     @WithMockUser("spring")
     @Test
     void findBeers() throws Exception {
@@ -42,14 +59,7 @@ public class BeerControllerIT extends BaseIT {
                 .andExpect(view().name("beers/findBeers"))
                 .andExpect(model().attributeExists("beer"));
     }
-
-    @Test
-    void findBeersWithHttpBasic() throws Exception {
-        mockMvc.perform(get("/beers/find").with(SecurityMockMvcRequestPostProcessors.httpBasic("spring", "blah")))
-                .andExpect(status().isOk())
-                .andExpect(view().name("beers/findBeers"))
-                .andExpect(model().attributeExists("beer"));
-    }
+    
 
     @Test
     void findBeersWithAnonymous() throws Exception {
