@@ -28,7 +28,7 @@ public class BeerControllerIT extends BaseIT {
 
     @Test
     void initCreationForm() throws Exception {
-        mockMvc.perform(get("/beers/new").with(SecurityMockMvcRequestPostProcessors.httpBasic("user", "passwd")))
+        mockMvc.perform(get("/beers/new").with(SecurityMockMvcRequestPostProcessors.httpBasic("user", "password")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/createBeer"))
                 .andExpect(model().attributeExists("beer"));
