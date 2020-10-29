@@ -13,14 +13,19 @@ public class PasswordEncoderTest {
 
     static String PASSWORD = "password";
 
+
+    @Test
+    void testBcypt15() {
+        PasswordEncoder bcr = new BCryptPasswordEncoder(15);
+        System.out.println(bcr.encode("tiger"));
+    }
+
     @Test
     void testBcypt() {
         PasswordEncoder bcr = new BCryptPasswordEncoder();
         System.out.println(bcr.encode(PASSWORD));
         System.out.println(bcr.encode(PASSWORD));
         System.out.println(bcr.encode("test"));
-
-
     }
 
     @Test
