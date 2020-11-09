@@ -12,6 +12,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BeerRestControllerIT extends BaseIT {
 
     @Test
+    void deleteBeerBadCredentials() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/beer/38dfa781-3290-4fb4-ba95-a8df3dcf1fb4")
+                .header("Api-Key", "spring").header("Api-Secret", "wrongPass"))
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @Test
     void deleteBeer() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/beer/38dfa781-3290-4fb4-ba95-a8df3dcf1fb4")
                 .header("Api-Key", "spring").header("Api-Secret", "test"))
