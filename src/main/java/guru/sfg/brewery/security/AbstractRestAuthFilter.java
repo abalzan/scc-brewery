@@ -100,9 +100,7 @@ public abstract class AbstractRestAuthFilter extends AbstractAuthenticationProce
 
         SecurityContextHolder.getContext().setAuthentication(authResult);
 
-
     }
-
 
     protected abstract String getUsername(HttpServletRequest httpServletRequest);
 
