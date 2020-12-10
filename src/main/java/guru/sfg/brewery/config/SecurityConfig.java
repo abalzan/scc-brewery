@@ -74,20 +74,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return CustomPasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("spring")
-                .password("{bcrypt}$2a$10$Tvr/GxBIPVcocA6zPndfO.kTEmvHwa5UsqsZ6/KRth7ij6VmhyhQ6")
-                .roles("ADMIN")
-                .and()
-                .withUser("user")
-                .password("{sha256}d8ba028a9c6f8c349fa833a39b96421b178e7cad4f131e02cff51b0cae38d4cee0a8191524261486")
-                .roles("USER")
-                .and()
-                .withUser("scott")
-                .password("{bcrypt15}$2a$15$xJIkEiXw/GBsXogTTUNimesiajtiVGXWFyaiHMr2x3elA2gF88Cj.")
-                .roles("CUSTOMER");
-
-    }
+    //In memory authentication sample
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.inMemoryAuthentication()
+//                .withUser("spring")
+//                .password("{bcrypt}$2a$10$Tvr/GxBIPVcocA6zPndfO.kTEmvHwa5UsqsZ6/KRth7ij6VmhyhQ6")
+//                .roles("ADMIN")
+//                .and()
+//                .withUser("user")
+//                .password("{sha256}d8ba028a9c6f8c349fa833a39b96421b178e7cad4f131e02cff51b0cae38d4cee0a8191524261486")
+//                .roles("USER")
+//                .and()
+//                .withUser("scott")
+//                .password("{bcrypt15}$2a$15$xJIkEiXw/GBsXogTTUNimesiajtiVGXWFyaiHMr2x3elA2gF88Cj.")
+//                .roles("CUSTOMER");
+//
+//    }
 }
