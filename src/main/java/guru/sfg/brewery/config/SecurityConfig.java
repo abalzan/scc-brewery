@@ -22,7 +22,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/beers/find", "/beers*").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/v1/beer/**").permitAll()
                         //hasRole should not start with ROLE which means ROLE_ADMIN should be passed as ADMIN
-                        .mvcMatchers(HttpMethod.DELETE, "api/v1/beer/**").hasRole("ADMIN")
+                        .mvcMatchers(HttpMethod.DELETE, "/api/v1/beer/**").hasRole("ADMIN")
+                        .mvcMatchers(HttpMethod.GET, "/brewery/api/v1/breweries").hasAnyRole("ADMIN", "CUSTOMER")
+                        .mvcMatchers("/brewery/breweries").hasAnyRole("ADMIN", "CUSTOMER")
                         .mvcMatchers(HttpMethod.GET, "/api/v1/beerUpc/{upc}").permitAll()
                 )
                 .authorizeRequests()
