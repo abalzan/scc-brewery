@@ -19,13 +19,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests(authorize -> authorize
                         .antMatchers("/h2-console/**").permitAll()
                         .antMatchers("/", "/webjars/**", "/login", "/resources/**").permitAll()
-                        .antMatchers("/beers/find", "/beers*").permitAll()
-                        .antMatchers(HttpMethod.GET, "/api/v1/beer/**").permitAll()
+                        .antMatchers(HttpMethod.GET, "/api/v1/beer/**").hasAnyRole("ADMIN", "CUSTOMER", "USER")
                         //hasRole should not start with ROLE which means ROLE_ADMIN should be passed as ADMIN
                         .mvcMatchers(HttpMethod.DELETE, "/api/v1/beer/**").hasRole("ADMIN")
                         .mvcMatchers(HttpMethod.GET, "/brewery/api/v1/breweries").hasAnyRole("ADMIN", "CUSTOMER")
+                        .mvcMatchers(HttpMethod.GET, "/api/v1/beerUpc/**").hasAnyRole("ADMIN", "CUSTOMER", "USER")
                         .mvcMatchers("/brewery/breweries").hasAnyRole("ADMIN", "CUSTOMER")
-                        .mvcMatchers(HttpMethod.GET, "/api/v1/beerUpc/{upc}").permitAll()
+                        .mvcMatchers(HttpMethod.GET, "/api/v1/beerUpc/{upc}").hasAnyRole("ADMIN", "CUSTOMER", "USER")
+                        .mvcMatchers(HttpMethod.GET, "/beers/find", "/beers/{beerId}").hasAnyRole("ADMIN", "CUSTOMER", "USER")
                 )
                 .authorizeRequests()
                 .anyRequest().authenticated()
