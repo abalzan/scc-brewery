@@ -3,7 +3,6 @@ package guru.sfg.brewery.config;
 import guru.sfg.brewery.security.CustomPasswordEncoderFactories;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,10 +20,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests(authorize -> authorize
                         .antMatchers("/h2-console/**").permitAll()
                         .antMatchers("/", "/webjars/**", "/login", "/resources/**").permitAll()
-                        //hasRole should not start with ROLE which means ROLE_ADMIN should be passed as ADMIN
-                        .mvcMatchers(HttpMethod.GET, "/brewery/api/v1/breweries").hasAnyRole("ADMIN", "CUSTOMER")
-                        .mvcMatchers("/brewery/breweries").hasAnyRole("ADMIN", "CUSTOMER")
-                        .mvcMatchers(HttpMethod.GET, "/beers/find", "/beers/{beerId}").hasAnyRole("ADMIN", "CUSTOMER", "USER")
                 )
                 .authorizeRequests()
                 .anyRequest().authenticated()
