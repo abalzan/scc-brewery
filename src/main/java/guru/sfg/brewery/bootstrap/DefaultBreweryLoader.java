@@ -50,6 +50,10 @@ public class DefaultBreweryLoader implements CommandLineRunner {
     public static final String GUINNESS_DISTRIBUTING = "Guinness Distributing";
     public static final String DUBLIN_WEST_DISTRIBUTING = "Dublin West Distributing";
 
+    public static final String ST_PATRICK_USER = "stpatrick";
+    public static final String DUBLIN_WEST_USER = "dublinwest";
+    public static final String GUINNESS_USER = "guinness";
+
     public static final String BEER_1_UPC = "0631234200036";
     public static final String BEER_2_UPC = "0631234300019";
     public static final String BEER_3_UPC = "0083783375213";
@@ -90,19 +94,19 @@ public class DefaultBreweryLoader implements CommandLineRunner {
 
         //create users
         User stPatrickUser = userRepository.save(User.builder()
-                .username("stpatrick").password("password")
+                .username(ST_PATRICK_USER).password("password")
                 .customer(stPatrickCustomer)
                 .role(customerRole)
                 .build());
 
         User guinnessUser = userRepository.save(User.builder()
-                .username("guinness").password("password")
+                .username(GUINNESS_USER).password("password")
                 .customer(guinnessCustomer)
                 .role(customerRole)
                 .build());
 
         User dublinWestUser = userRepository.save(User.builder()
-                .username("dublinwest").password("password")
+                .username(DUBLIN_WEST_USER).password("password")
                 .customer(dublinWestCustomer)
                 .role(customerRole)
                 .build());
