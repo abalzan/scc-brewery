@@ -1,11 +1,15 @@
 package guru.sfg.brewery.web.controllers.api;
 
+import guru.sfg.brewery.security.permissions.BeerOrderCreatePermission;
+import guru.sfg.brewery.security.permissions.BeerOrderReadPermission;
+import guru.sfg.brewery.security.permissions.BeerOrderUpdatePermission;
 import guru.sfg.brewery.services.BeerOrderService;
 import guru.sfg.brewery.web.model.BeerOrderDto;
 import guru.sfg.brewery.web.model.BeerOrderPagedList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -20,6 +24,7 @@ public class BeerOrderController {
 
     private final BeerOrderService beerOrderService;
 
+    @BeerOrderReadPermission
     @GetMapping("orders")
     public BeerOrderPagedList listOrders(@PathVariable("customerId") UUID customerId,
                                          @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
@@ -35,17 +40,20 @@ public class BeerOrderController {
         return beerOrderService.listOrders(customerId, PageRequest.of(pageNumber, pageSize));
     }
 
+    @BeerOrderCreatePermission
     @PostMapping("orders")
     @ResponseStatus(HttpStatus.CREATED)
     public BeerOrderDto createOrder(@PathVariable("customerId") UUID customerId, @RequestBody BeerOrderDto beerOrderDto) {
         return beerOrderService.placeOrder(customerId, beerOrderDto);
     }
 
+    @BeerOrderReadPermission
     @GetMapping("orders/{orderId}")
     public BeerOrderDto getOrder(@PathVariable("customerId") UUID customerId, @PathVariable("orderId") UUID orderId) {
         return beerOrderService.getOrderById(customerId, orderId);
     }
 
+    @BeerOrderUpdatePermission
     @PutMapping("orders/{orderId}/pickup")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void pickupOrder(@PathVariable("customerId") UUID customerId, @PathVariable("orderId") UUID orderId) {

@@ -3,6 +3,7 @@ package guru.sfg.brewery.web.controllers.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.sfg.brewery.bootstrap.DefaultBreweryLoader;
 import guru.sfg.brewery.domain.Beer;
+import guru.sfg.brewery.domain.BeerOrder;
 import guru.sfg.brewery.domain.Customer;
 import guru.sfg.brewery.repositories.BeerOrderRepository;
 import guru.sfg.brewery.repositories.BeerRepository;
@@ -19,6 +20,7 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -101,12 +103,11 @@ public class BeerOrderControllerTest extends BaseIT {
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(beerOrderDto)))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
-    @WithUserDetails(DefaultBreweryLoader.GUINNESS_USER)
     @Test
-    void createOrderUserGuinness() throws Exception {
+    void createOrderUserNotAuth() throws Exception {
         BeerOrderDto beerOrderDto = buildOrderDto(stPatrickCustomer, loadedBeers.get(0).getId());
 
         mockMvc.perform(MockMvcRequestBuilders.post(API_ROOT+stPatrickCustomer.getId()+"/orders")
@@ -114,7 +115,7 @@ public class BeerOrderControllerTest extends BaseIT {
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(beerOrderDto)))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
@@ -148,6 +149,45 @@ public class BeerOrderControllerTest extends BaseIT {
     void listCustomersNoAuth() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(API_ROOT + stPatrickCustomer.getId()))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Transactional
+    @Test
+    void getByOrderIdNotAuth() throws Exception {
+        BeerOrder beerOrder = stPatrickCustomer.getBeerOrders().stream().findFirst().orElseThrow();
+
+        mockMvc.perform(MockMvcRequestBuilders.get(API_ROOT + stPatrickCustomer.getId() + "/orders/"+beerOrder.getId()))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Transactional
+    @WithUserDetails("spring")
+    @Test
+    void getByOrderIdAdmin() throws Exception {
+        BeerOrder beerOrder = stPatrickCustomer.getBeerOrders().stream().findFirst().orElseThrow();
+
+        mockMvc.perform(MockMvcRequestBuilders.get(API_ROOT + stPatrickCustomer.getId() + "/orders/"+beerOrder.getId()))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+    }
+
+    @Transactional
+    @WithUserDetails(DefaultBreweryLoader.ST_PATRICK_USER)
+    @Test
+    void getByOrderIdCustomerAuth() throws Exception {
+        BeerOrder beerOrder = stPatrickCustomer.getBeerOrders().stream().findFirst().orElseThrow();
+
+        mockMvc.perform(MockMvcRequestBuilders.get(API_ROOT + stPatrickCustomer.getId() + "/orders/"+beerOrder.getId()))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+    }
+
+    @Transactional
+    @WithUserDetails(DefaultBreweryLoader.GUINNESS_USER)
+    @Test
+    void getByOrderIdCustomerNotAuth() throws Exception {
+        BeerOrder beerOrder = stPatrickCustomer.getBeerOrders().stream().findFirst().orElseThrow();
+
+        mockMvc.perform(MockMvcRequestBuilders.get(API_ROOT + stPatrickCustomer.getId() + "/orders/"+beerOrder.getId()))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
     private BeerOrderDto buildOrderDto(Customer customer, UUID beeerId) {
