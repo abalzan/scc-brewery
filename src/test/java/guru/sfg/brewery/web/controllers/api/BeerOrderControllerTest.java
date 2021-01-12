@@ -118,6 +118,45 @@ public class BeerOrderControllerTest extends BaseIT {
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
+    @Transactional
+    @WithUserDetails("spring")
+    @Test
+    void pickupOrderAdmin() throws Exception {
+        BeerOrder beerOrder = stPatrickCustomer.getBeerOrders().stream().findFirst().orElseThrow();
+
+        mockMvc.perform(MockMvcRequestBuilders.put(API_ROOT+stPatrickCustomer.getId()+"/orders/" + beerOrder.getId() +"/pickup"))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Transactional
+    @WithUserDetails(DefaultBreweryLoader.ST_PATRICK_USER)
+    @Test
+    void pickupOrderUserPatrick() throws Exception {
+        BeerOrder beerOrder = stPatrickCustomer.getBeerOrders().stream().findFirst().orElseThrow();
+
+        mockMvc.perform(MockMvcRequestBuilders.put(API_ROOT+stPatrickCustomer.getId()+"/orders/" + beerOrder.getId() +"/pickup"))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Transactional
+    @WithUserDetails(DefaultBreweryLoader.DUBLIN_WEST_USER)
+    @Test
+    void pickupOrderUserWest() throws Exception {
+        BeerOrder beerOrder = stPatrickCustomer.getBeerOrders().stream().findFirst().orElseThrow();
+
+        mockMvc.perform(MockMvcRequestBuilders.put(API_ROOT+stPatrickCustomer.getId()+"/orders/" + beerOrder.getId() +"/pickup"))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Transactional
+    @Test
+    void pickupOrderUserNotAuth() throws Exception {
+        BeerOrder beerOrder = stPatrickCustomer.getBeerOrders().stream().findFirst().orElseThrow();
+
+        mockMvc.perform(MockMvcRequestBuilders.put(API_ROOT+stPatrickCustomer.getId()+"/orders/" + beerOrder.getId() +"/pickup"))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
     @Test
     void listOrdersNoAuth() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(API_ROOT + stPatrickCustomer.getId()+ "/orders"))
