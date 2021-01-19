@@ -82,6 +82,44 @@ public class BeerOrderControllerV2Test extends BaseIT {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
+    @Transactional
+    @Test
+    void getByOrderIdNoAuth() throws Exception {
+        BeerOrder beerOrder = stPatrickCustomer.getBeerOrders().stream().findFirst().orElseThrow();
+        mockMvc.perform(MockMvcRequestBuilders.get(API_ROOT + beerOrder.getId()))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Transactional
+    @WithUserDetails("spring")
+    @Test
+    void getByOrderIdAdmin() throws Exception {
+        BeerOrder beerOrder = stPatrickCustomer.getBeerOrders().stream().findFirst().orElseThrow();
+        mockMvc.perform(MockMvcRequestBuilders.get(API_ROOT + beerOrder.getId()))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+    }
+
+    @Transactional
+    @WithUserDetails(DefaultBreweryLoader.ST_PATRICK_USER)
+    @Test
+    void getByOrderIdCustomerAuth() throws Exception {
+        BeerOrder beerOrder = stPatrickCustomer.getBeerOrders().stream().findFirst().orElseThrow();
+        mockMvc.perform(MockMvcRequestBuilders.get(API_ROOT + beerOrder.getId()))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+    }
+
+    @Transactional
+    @WithUserDetails(DefaultBreweryLoader.DUBLIN_WEST_USER)
+    @Test
+    void getByOrderIdCustomerNotAuth() throws Exception {
+        BeerOrder beerOrder = stPatrickCustomer.getBeerOrders().stream().findFirst().orElseThrow();
+        mockMvc.perform(MockMvcRequestBuilders.get(API_ROOT + beerOrder.getId()))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+
+
+
     private BeerOrderDto buildOrderDto(Customer customer, UUID beeerId) {
         List<BeerOrderLineDto> orderLines = Arrays.asList(BeerOrderLineDto.builder()
                 .id(UUID.randomUUID())
