@@ -45,7 +45,7 @@ public class CustomerControllerIT extends BaseIT {
         @Rollback
         @Test
         void processCreationForm() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.post("/customers/new")
+            mockMvc.perform(MockMvcRequestBuilders.post("/customers/new").with(SecurityMockMvcRequestPostProcessors.csrf())
                     .param("customer Name", "foo bar customer")
                     .with(SecurityMockMvcRequestPostProcessors.httpBasic("spring", "test")))
                     .andExpect(MockMvcResultMatchers.status().is3xxRedirection());
@@ -55,7 +55,7 @@ public class CustomerControllerIT extends BaseIT {
         @ParameterizedTest(name = "#{index} with [{arguments}]")
         @MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamNotAdmin")
         void processCreationFormNoRight(String user, String pwd) throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.post("/customers/new")
+            mockMvc.perform(MockMvcRequestBuilders.post("/customers/new").with(SecurityMockMvcRequestPostProcessors.csrf())
                     .param("customer Name", "foo bar customer 2")
                     .with(SecurityMockMvcRequestPostProcessors.httpBasic(user, pwd)))
                     .andExpect(MockMvcResultMatchers.status().isForbidden());
@@ -63,7 +63,7 @@ public class CustomerControllerIT extends BaseIT {
 
         @Test
         void processCreationFormNoAuth() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.post("/customers/new")
+            mockMvc.perform(MockMvcRequestBuilders.post("/customers/new").with(SecurityMockMvcRequestPostProcessors.csrf())
                     .param("customer Name", "foo bar customer"))
                     .andExpect(MockMvcResultMatchers.status().isUnauthorized());
         }
