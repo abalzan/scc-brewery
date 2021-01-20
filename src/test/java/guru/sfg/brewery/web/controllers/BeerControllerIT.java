@@ -9,7 +9,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -102,6 +105,47 @@ public class BeerControllerIT extends BaseIT {
 
             mockMvc.perform(get("/beers/" + beer.getId()))
                     .andExpect(status().isUnauthorized());
+        }
+    }
+
+
+    @DisplayName("Add Beers")
+    @Nested
+    class AddCustomers {
+        @Rollback
+        @Test
+        void processCreationForm() throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.post("/beers/new").with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .param("beer Name", "foo bar beer")
+                    .param("Style", "IPA")
+                    .param("upc", "123456")
+                    .param("Min Qty on Hand", "123")
+                    .param("Qty to Brew", "12")
+                    .param("price", "10.99")
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("spring", "test")))
+                    .andExpect(MockMvcResultMatchers.status().is3xxRedirection());
+        }
+
+        @Rollback
+        @ParameterizedTest(name = "#{index} with [{arguments}]")
+        @MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamNotAdmin")
+        void processCreationFormNoRight(String user, String pwd) throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.post("/beers/new").with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .param("beer Name", "foo bar beer 2")
+                    .param("Style", "IPA")
+                    .param("upc", "123456")
+                    .param("Min Qty on Hand", "123")
+                    .param("Qty to Brew", "12")
+                    .param("price", "10.99")
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic(user, pwd)))
+                    .andExpect(MockMvcResultMatchers.status().isForbidden());
+        }
+
+        @Test
+        void processCreationFormNoAuth() throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.post("/customers/new").with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .param("customer Name", "foo bar customer"))
+                    .andExpect(MockMvcResultMatchers.status().isUnauthorized());
         }
     }
 
