@@ -60,6 +60,14 @@ public class User implements UserDetails, CredentialsContainer {
     @Builder.Default
     private boolean enabled = true;
 
+    @Builder.Default
+    private Boolean userGoogle2fa = false;
+
+    private String google2FaSecret;
+
+    @Transient
+    private Boolean google2FaRequired = true;
+
     @Override
     public boolean isEnabled() {
         return this.enabled;
@@ -79,6 +87,7 @@ public class User implements UserDetails, CredentialsContainer {
     public boolean isCredentialsNonExpired() {
         return this.credentialsNonExpired;
     }
+
 
     @Override
     public void eraseCredentials() {
