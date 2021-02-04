@@ -23,13 +23,13 @@ public class UserController {
 
         model.addAttribute("googleurl", "todo");
 
-        return "user/registersfa";
+        return "user/register2fa";
 
     }
 
     @PostMapping
     public String confirm2fa(@RequestParam Integer verifyCode) {
-        
+
         return "index";
     }
 }
