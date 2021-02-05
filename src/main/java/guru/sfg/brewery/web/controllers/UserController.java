@@ -23,7 +23,7 @@ public class UserController {
     private final UserRepository userRepository;
     private final GoogleAuthenticator googleAuthenticator;
 
-    @GetMapping("/register2fa/")
+    @GetMapping("/register2fa")
     public String register2fa(Model model) {
 
         User user = getUser();
@@ -54,10 +54,27 @@ public class UserController {
             userRepository.save(savedUser);
 
 
-            return "index";
+            return "/index";
         } else {
             //if code is not valid
             return "user/register2fa";
         }
+    }
+
+    @GetMapping("/verify2fa")
+    public String verify2fa() {
+        return "user/verify2fa";
+    }
+
+    @PostMapping
+    public String veirfyPostOf2fa(@RequestParam Integer verifyCode) {
+        User user = getUser();
+        if (googleAuthenticator.authorizeUser(user.getUsername(), verifyCode)) {
+            ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).setGoogle2FaRequired(false);
+
+            return "/index";
+        }
+        return "user/verify2fa";
+
     }
 }
