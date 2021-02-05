@@ -28,7 +28,7 @@ public class UserController {
 
         User user = getUser();
 
-        String url = GoogleAuthenticatorQRGenerator.getOtpAuthTotpURL("Andrei", user.getUsername(),
+        String url = GoogleAuthenticatorQRGenerator.getOtpAuthURL("Andrei", user.getUsername(),
                 googleAuthenticator.createCredentials(user.getUsername()));
 
         log.debug("Google QR url: " + url);
@@ -43,14 +43,14 @@ public class UserController {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
-    @PostMapping
+    @PostMapping("/register2fa")
     public String confirm2fa(@RequestParam Integer verifyCode) {
         User user = getUser();
         log.debug("Entered code is: " + verifyCode);
 
         if (googleAuthenticator.authorizeUser(user.getUsername(), verifyCode)) {
             User savedUser = userRepository.findById(user.getId()).orElseThrow();
-            savedUser.setUserGoogle2fa(true);
+            savedUser.setUseGoogle2fa(true);
             userRepository.save(savedUser);
 
 
@@ -66,7 +66,7 @@ public class UserController {
         return "user/verify2fa";
     }
 
-    @PostMapping
+    @PostMapping("/verify2fa")
     public String veirfyPostOf2fa(@RequestParam Integer verifyCode) {
         User user = getUser();
         if (googleAuthenticator.authorizeUser(user.getUsername(), verifyCode)) {
